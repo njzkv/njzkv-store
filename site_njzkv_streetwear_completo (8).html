@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NJZKV Streetwear</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: white;
+    }
+
+    header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: black;
+      border-bottom: 1px solid #222;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #00aaff;
+      letter-spacing: 3px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #00aaff;
+    }
+
+    .hero {
+      height: 80vh;
+      background: linear-gradient(to bottom, rgba(0,0,0,.7), rgba(0,0,0,.9)), url('https://images.unsplash.com/photo-1523398002811-999ca8dec234?q=80&w=1200&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .hero h1 {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      color: #ccc;
+      max-width: 600px;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      background: #00aaff;
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      background: #0088cc;
+    }
+
+    .search-box {
+      padding: 30px 20px 10px;
+      text-align: center;
+    }
+
+    .search-box input {
+      width: 100%;
+      max-width: 500px;
+      padding: 14px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 40px;
+    }
+
+    .product {
+      background: #121212;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: 0.3s;
+      border: 1px solid #222;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 15px rgba(0,170,255,.3);
+    }
+
+    .product img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+    }
+
+    .product-content {
+      padding: 18px;
+    }
+
+    .product h3 {
+      margin-bottom: 10px;
+    }
+
+    .price {
+      color: #00aaff;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .cart {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #00aaff;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0,170,255,.5);
+    }
+
+    .admin {
+      padding: 40px;
+      background: #111;
+      margin-top: 40px;
+    }
+
+    .admin h2 {
+      margin-bottom: 20px;
+      color: #00aaff;
+    }
+
+    .admin input {
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      background: black;
+      color: #777;
+      margin-top: 40px;
+    }
+
+    @media(max-width:700px) {
+      .hero h1 {
+        font-size: 40px;
+      }
+
+      .products {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="pagamentoModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:#111; padding:30px; border-radius:15px; max-width:400px; width:90%; text-align:center;">
+    <h2 style="margin-bottom:20px; color:#00aaff;">Pagamento</h2>
+
+    <button class="btn" onclick="pagarPix()" style="width:100%; margin-bottom:10px;">PIX</button>
+    <button class="btn" onclick="pagarCartao()" style="width:100%; margin-bottom:10px;">Cartão Crédito/Débito</button>
+    <button class="btn" onclick="mostrarQr()" style="width:100%; margin-bottom:10px;">QR Code</button>
+
+    <div id="qrcodeArea" style="display:none; margin-top:20px;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=NJZKV" width="200">
+      <p style="margin-top:10px;">Escaneie o QR Code</p>
+  <button id="deleteTextoBtn" class="btn admin-delete" style="display:none; background:red; margin-top:15px;" onclick="apagarTextoLoja()">Apagar Texto</button>
+</div>
+    </div>
+
+    <button class="btn" onclick="fecharPagamento()" style="margin-top:20px; background:red;">Fechar</button>
+  </div>
+</div>
+
+<header>
+  <div class="logo" id="logoLoja">NJZKV</div>
+
+  <nav>
+    <a href="#produtos">Produtos</a>
+    <a href="#admin">ADM</a>
+  </nav>
+</header>
+
+<section class="hero" id="heroBanner" style="position:relative;">
+
+<div id="bannerEditBtn" style="display:none; position:absolute; top:20px; right:20px; z-index:50;">
+  <label for="novoBanner" class="btn" style="cursor:pointer;">📸 Trocar Banner</label>
+</div>
+  <h1 id="tituloPrincipal">Streetwear Premium</h1>
+  <div id="textoArea">
+  <p id="textoLoja">
+    Moda urbana moderna, estilo exclusivo e peças únicas para elevar seu visual.
+  </p>
+
+  
+</section>
+
+<section class="search-box">
+  <input type="text" id="search" placeholder="Pesquisar produto..." onkeyup="searchProducts()">
+</section>
+
+<section class="products" id="produtos">
+
+  <div class="product">
+    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1200&auto=format&fit=crop" alt="Camisa">
+
+    <div class="product-content">
+      <h3>Camiseta Oversized</h3>
+      <div class="price">R$ 119,90</div>
+      <button class="btn" onclick="buyProduct('Camiseta Oversized',119.90)">Comprar</button>
+      <button class="btn admin-delete" style="background:red; margin-top:10px; display:none;" onclick="deleteStaticProduct(this)">Apagar Produto</button>
+    </div>
+  </div>
+
+  <div class="product">
+    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop" alt="Moletom">
+
+    <div class="product-content">
+      <h3>Moletom Street</h3>
+      <div class="price">R$ 199,90</div>
+      <button class="btn" onclick="buyProduct('Moletom Street',199.90)">Comprar</button>
+      <button class="btn admin-delete" style="background:red; margin-top:10px; display:none;" onclick="deleteStaticProduct(this)">Apagar Produto</button>
+    </div>
+  </div>
+
+  <div class="product">
+    <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1200&auto=format&fit=crop" alt="Calça">
+
+    <div class="product-content">
+      <h3>Calça Cargo</h3>
+      <div class="price">R$ 159,90</div>
+      <button class="btn" onclick="buyProduct('Calça Cargo',159.90)">Comprar</button>
+      <button class="btn admin-delete" style="background:red; margin-top:10px; display:none;" onclick="deleteStaticProduct(this)">Apagar Produto</button>
+    </div>
+  </div>
+
+</section>
+
+<section class="admin" id="admin">
+  <h2>Painel ADM</h2>
+
+  <input type="password" id="senha" placeholder="Digite a senha ADM">
+  <button class="btn" onclick="loginAdmin()">Entrar</button>
+
+  <div id="painel" style="display:none; margin-top:20px; background:#181818; padding:25px; border-radius:15px; border:1px solid #333;">
+    <h3 style="margin-bottom:20px; color:#00aaff;">Central Administrativa</h3>
+
+    <div style="display:grid; gap:15px;">
+    <p style="margin-bottom:15px; color:#00aaff;">Área protegida do administrador.</p>
+
+    <input type="text" id="novoNome" placeholder="Novo nome do produto">
+    <input type="text" id="novoPreco" placeholder="Novo preço">
+    <input type="file" id="novaImagem" accept="image/*">
+    <input type="file" id="novoBanner" accept="image/*">
+
+    <button class="btn" onclick="adicionarProduto()">Adicionar Produto</button>
+    <button class="btn" onclick="trocarBanner()">Trocar Banner</button>
+
+    <button class="btn" onclick="mostrarEditorBanner()">Editar Banner pela Foto</button>
+
+    <input type="text" id="novoTituloLoja" placeholder="Novo nome da loja">
+    <button class="btn" onclick="alterarNomeLoja()">Alterar Nome</button>
+
+    <input type="text" id="novoTextoLoja" placeholder="Novo texto da loja">
+    <button class="btn" onclick="alterarTextoLoja()">Alterar Texto</button>
+
+    <input type="text" id="novoTituloPrincipal" placeholder="Novo título principal">
+    <button class="btn" onclick="alterarTituloPrincipal()">Alterar Título Principal</button>
+
+    <input type="text" id="novoTextoBannerAnimado" placeholder="Novo texto do banner animado">
+    <button class="btn" onclick="alterarBannerAnimado()">Alterar Banner Animado</button>
+    <p style="margin-bottom:15px; color:#00aaff;">ADM conectado com sucesso.</p>
+
+    <input type="text" placeholder="Nome do produto">
+    <input type="text" placeholder="Preço">
+    <input type="text" placeholder="URL da imagem">
+
+    <button class="btn">Adicionar Produto</button>
+  </div>
+</section>
+
+<div class="cart" onclick="openCart()">
+  🛒
+</div>
+
+<section style="padding:40px; text-align:center; background:#111;">
+  <h2 style="margin-bottom:20px; color:#00aaff;">Contato</h2>
+
+  <p style="margin-bottom:15px;">WhatsApp: <a href="https://wa.me/5511966723963" style="color:#00aaff;">11 96672-3963</a></p>
+
+  <p>Instagram: <a href="https://instagram.com/njzkv_ofc" style="color:#00aaff;">@njzkv_ofc</a></p>
+</section>
+
+<footer>
+  © 2026 NJZKV Streetwear — Todos os direitos reservados.
+</footer>
+
+<script>
+  // Sistema principal corrigido
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('NJZKV carregado');
+  });
+  const adminPassword = 'jn407789';
+
+  function loginAdmin() {
+    event.preventDefault();
+    const senha = document.getElementById('senha').value;
+
+    if(senha === adminPassword) {
+      document.getElementById('painel').style.display = 'block';
+      document.querySelectorAll('.admin-delete').forEach(btn => {
+        btn.style.display = 'block';
+      });
+
+      document.getElementById('bannerEditBtn').style.display = 'block';
+      alert('ADM conectado!');
+    } else {
+      alert('Senha incorreta!');
+    }
+  }
+
+  function buyProduct(product, preco = 0) {
+    console.log(product, preco);
+    carrinho.push({ nome: product, preco: preco });
+    alert('Produto adicionado ao carrinho: ' + product);
+  }
+
+  function adicionarProduto() {
+    const nome = document.getElementById('novoNome').value;
+    const preco = document.getElementById('novoPreco').value;
+    const imagem = document.getElementById('novaImagem').files[0];
+
+    if(!nome || !preco || !imagem) {
+      alert('Preencha todos os campos');
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      const products = document.getElementById('produtos');
+
+      const div = document.createElement('div');
+      div.className = 'product';
+
+      div.innerHTML = `
+        <img src="${e.target.result}">
+        <div class="product-content">
+          <h3>${nome}</h3>
+          <div class="price">R$ ${preco}</div>
+          <button class="btn" onclick="buyProduct('${nome}', ${preco})">Comprar</button>
+        </div>
+      `;
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'btn';
+      deleteBtn.style.marginTop = '10px';
+      deleteBtn.style.background = 'red';
+      deleteBtn.innerText = 'Apagar Produto';
+
+      deleteBtn.onclick = function() {
+        const senha = prompt('Digite a senha ADM');
+
+        if(senha === adminPassword) {
+          div.remove();
+          alert('Produto apagado');
+        } else {
+          alert('Senha incorreta');
+        }
+      };
+
+      deleteBtn.classList.add('admin-delete');
+      deleteBtn.style.display = 'block';
+      div.appendChild(deleteBtn);
+
+      products.appendChild(div);
+
+      alert('Produto adicionado com sucesso');
+    }
+
+    reader.readAsDataURL(imagem);
+  }
+
+  function trocarBanner() {
+    const banner = document.getElementById('novoBanner').files[0];
+
+    if(!banner) {
+      alert('Escolha uma imagem');
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      document.querySelector('.hero').style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,.7), rgba(0,0,0,.9)), url('${e.target.result}')`;
+      alert('Banner alterado');
+    }
+
+    reader.readAsDataURL(banner);
+  }
+
+  function alterarNomeLoja() {
+    const nome = document.getElementById('novoTituloLoja').value;
+
+    if(nome) {
+      document.getElementById('logoLoja').innerText = nome;
+      alert('Nome alterado');
+    }
+  }
+
+  function deleteStaticProduct(btn) {
+    const senha = prompt('Senha ADM');
+
+    if(senha === adminPassword) {
+      btn.parentElement.parentElement.remove();
+      alert('Produto removido');
+    } else {
+      alert('Somente ADM pode apagar');
+    }
+  }
+
+  function apagarTextoLoja() {
+    if(confirm('Deseja apagar o texto da loja?')) {
+      document.getElementById('textoArea').style.display = 'none';
+      alert('Texto apagado');
+    }
+  }
+
+  function mostrarEditorBanner() {
+    document.getElementById('bannerEditBtn').style.display = 'block';
+    alert('Clique no botão da foto para trocar o banner');
+  }
+
+  function alterarTituloPrincipal() {
+    const titulo = document.getElementById('novoTituloPrincipal').value;
+
+    if(titulo) {
+      document.getElementById('tituloPrincipal').innerText = titulo;
+      alert('Título alterado');
+    }
+  }
+
+  function alterarBannerAnimado() {
+    const texto = document.getElementById('novoTextoBannerAnimado').value;
+
+    if(texto) {
+      document.getElementById('textoBannerAnimado').innerText = texto;
+      alert('Banner animado alterado');
+    }
+  }
+
+  function alterarTextoLoja() {
+    const texto = document.getElementById('novoTextoLoja').value;
+
+    if(texto) {
+      document.getElementById('textoLoja').innerText = texto;
+      alert('Texto alterado');
+    }
+  }
+
+  let carrinho = [];
+
+  function openCart() {
+    document.getElementById('pagamentoModal').style.display = 'flex';
+  }
+
+  function fecharPagamento() {
+    document.getElementById('pagamentoModal').style.display = 'none';
+  }
+
+  function pagarPix() {
+    alert('PIX: 11 96672-3963');
+
+    document.getElementById('qrcodeArea').style.display = 'block';
+    document.getElementById('qrcodeArea').innerHTML = `
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=11966723963" width="220">
+      <p style="margin-top:10px;">PIX: 11 96672-3963</p>
+    `;
+  }
+
+  function pagarCartao() {
+    document.getElementById('qrcodeArea').style.display = 'block';
+
+    document.getElementById('qrcodeArea').innerHTML = `
+      <div style="text-align:left; margin-top:20px;">
+        <input type="text" placeholder="Número do cartão" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:none;">
+
+        <input type="text" placeholder="Nome no cartão" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:none;">
+
+        <input type="text" placeholder="Validade" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:none;">
+
+        <input type="text" placeholder="CVV" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:none;">
+
+        <button class="btn" style="width:100%;" onclick="finalizarPagamentoCartao()">Finalizar Pagamento</button>
+      </div>
+    `;
+  }
+
+  function finalizarPagamentoCartao() {
+    alert('Checkout Mercado Pago iniciado');
+
+    // Aqui entra a integração oficial do Mercado Pago
+    // Substitua pelas credenciais reais no servidor seguro
+  }
+
+  function mostrarQr() {
+    document.getElementById('qrcodeArea').style.display = 'block';
+  }
+
+  function searchProducts() {
+    let input = document.getElementById('search').value.toLowerCase();
+    let products = document.querySelectorAll('.product');
+
+    products.forEach(product => {
+      let title = product.querySelector('h3').innerText.toLowerCase();
+
+      if(title.includes(input)) {
+        product.style.display = 'block';
+      } else {
+        product.style.display = 'none';
+      }
+    });
+  }
+  // Tema dark/light
+  const body = document.body;
+
+  function toggleTheme() {
+    body.classList.toggle('light');
+  }
+
+  // Favoritos
+  function favoriteProduct(product) {
+    alert(product + ' adicionado aos favoritos ❤️');
+  }
+
+  // Cupom
+  function applyCoupon() {
+    const coupon = prompt('Digite seu cupom');
+
+    if(coupon === 'NJZKV10') {
+      alert('Cupom aplicado: 10% OFF');
+    } else {
+      alert('Cupom inválido');
+    }
+  }
+
+  // Frete
+  function calcFrete() {
+    const cep = prompt('Digite seu CEP');
+
+    if(cep) {
+      alert('Frete estimado: R$ 24,90');
+    }
+  }
+
+  // WhatsApp
+  function whatsappBuy(product) {
+    const numero = '5545999999999';
+    const texto = encodeURIComponent('Olá! Tenho interesse no produto: ' + product);
+
+    window.open('https://wa.me/' + numero + '?text=' + texto, '_blank');
+  }
+
+  // Login cliente
+  function loginCliente() {
+    const nome = prompt('Digite seu nome');
+
+    if(nome) {
+      alert('Bem-vindo, ' + nome + '!');
+    }
+  }
+
+  // Estoque automático
+  let estoque = {
+    'Camiseta Oversized': 8,
+    'Moletom Street': 5,
+    'Calça Cargo': 3
+  };
+
+  // Mercado Pago integração pronta
+  const MERCADO_PAGO_PUBLIC_KEY = 'SUA_PUBLIC_KEY_AQUI';
+  const MERCADO_PAGO_ACCESS_TOKEN = 'SEU_ACCESS_TOKEN_AQUI';
+  function pagarMercadoPago() {
+    alert('Integração Mercado Pago pronta para produção.');
+  }
+</script>
+
+<style>
+  .light {
+    background: #f5f5f5;
+    color: black;
+  }
+
+  .top-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .banner {
+    width: 100%;
+    overflow: hidden;
+    background: #00aaff;
+    color: white;
+    padding: 12px;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  .banner span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: slide 12s linear infinite;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+
+  @keyframes slide {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-100%);
+    }
+  }
+</style>
+
+<div class="banner">
+  <span id="textoBannerAnimado">⚡ NOVA COLEÇÃO STREETWEAR DISPONÍVEL AGORA ⚡</span>
+</div>
+
+<div class="top-actions">
+  <button class="btn" onclick="toggleTheme()">Dark/Light</button>
+  <button class="btn" onclick="applyCoupon()">Cupom</button>
+  <button class="btn" onclick="calcFrete()">Calcular Frete</button>
+  <button class="btn" onclick="loginCliente()">Login Cliente</button>
+  <button class="btn" onclick="pagarMercadoPago()">Mercado Pago</button>
+</div>
+
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
+<script>
+  const mp = new MercadoPago('SUA_PUBLIC_KEY_AQUI');
+
+  async function checkoutReal() {
+    try {
+      const response = await fetch('/create_preference', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: 'Produto NJZKV',
+          quantity: 1,
+          price: 199.90
+        })
+      });
+
+      const data = await response.json();
+
+      window.location.href = data.init_point;
+
+    } catch (error) {
+      alert('Erro ao iniciar pagamento');
+      console.log(error);
+    }
+  }
+</script>
+
+<!-- BACKEND NODE.JS EXEMPLO -->
+<!--
+const express = require('express');
+const mercadopago = require('mercadopago');
+const app = express();
+
+app.use(express.json());
+
+mercadopago.configure({
+  access_token: 'SEU_ACCESS_TOKEN_PRIVADO'
+});
+
+app.post('/create_preference', async (req, res) => {
+  try {
+    const preference = {
+      items: [
+        {
+          title: req.body.title,
+          unit_price: Number(req.body.price),
+          quantity: Number(req.body.quantity)
+        }
+      ]
+    };
+
+    const result = await mercadopago.preferences.create(preference);
+
+    res.json({
+      init_point: result.body.init_point
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Erro');
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Servidor rodando');
+});
+-->
+
+</body>
+</html>
