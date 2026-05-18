@@ -1,5 +1,4 @@
 const express = require('express');
-const mercadopago = require('mercadopago');
 const cors = require('cors');
 
 const app = express();
@@ -7,34 +6,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mercadopago.configure({
-  access_token: process.env.MP_ACCESS_TOKEN
+app.get('/', (req, res) => {
+  res.send('NJZKV API ONLINE');
 });
 
 app.post('/create_preference', async (req, res) => {
   try {
 
-    const preference = {
-      items: [
-        {
-          title: req.body.title,
-          unit_price: Number(req.body.price),
-          quantity: Number(req.body.quantity)
-        }
-      ]
-    };
-
-    const response = await mercadopago.preferences.create(preference);
-
     res.json({
-      init_point: response.body.init_point
+      init_point: 'https://www.mercadopago.com.br'
     });
 
   } catch (error) {
+
     console.log(error);
+
     res.status(500).json({
       error: 'Erro no pagamento'
     });
+
   }
 });
 
